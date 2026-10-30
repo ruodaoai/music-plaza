@@ -1,0 +1,10 @@
+{
+  "name": "music-plaza",
+  "displayName": "音乐广场",
+  "version": "1.3.0",
+  "description": "基于 musicdl 聚合 57 个音乐/有声平台的搜索、歌单解析、在线播放与下载；内置酷狗官方榜单与本地代理转发，支持有声书分集播放。",
+  "author": {
+    "name": "Ruodao"
+  },
+  "ui": "./ui.json"
+}

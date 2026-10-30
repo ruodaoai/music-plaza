@@ -1,0 +1,39 @@
+{
+  "displayName": "音乐广场",
+  "slug": "music-plaza",
+  "summary": "用 musicdl 聚合 57 个音乐与有声平台的搜索、歌单解析、在线播放与下载，内置酷狗官方榜单，音频经本地代理转发，列表里能直接试听、下载、收藏。",
+  "description": "一个入口搜遍全网音乐库。\n\n【聚合搜索】\n底层用 musicdl 接入 57 个音乐 / 有声平台，一次搜索按平台分组出结果，不用在十几个网站之间来回切；每条结果标明来源平台与可用的音质，能播的直接播、能下的直接下。\n\n【歌单解析】\n粘贴歌单链接即可解析出完整曲目列表，逐首播放或批量下载；解析结果可以整体收藏进「我的收藏」。\n\n【榜单】\n内置酷狗官方榜单，随时看当下热门；榜单曲目与搜索结果共用同一个播放器。\n\n【在线播放与下载】\n音频由本地代理转发，绕开浏览器的跨域与防盗链限制；列表内直接试听，选中后可下载到本地。\n\n【收藏与记录】\n搜索、歌单、榜单里喜欢的条目都能加入收藏，下次直接从「我的收藏」进。\n\n说明：能力来自开源 musicdl 与各平台公开接口，仅供学习研究，请支持正版、遵守各平台条款。",
+  "author": "Ruodao",
+  "category": "Utilities",
+  "tags": [
+    "音乐",
+    "搜索",
+    "在线播放",
+    "下载",
+    "歌单",
+    "有声书",
+    "榜单",
+    "聚合",
+    "musicdl"
+  ],
+  "version": "1.3.0",
+  "repositoryUrl": "",
+  "sourceRef": "",
+  "pluginPath": "",
+  "permissions": [
+    "network",
+    "process"
+  ],
+  "capabilities": [
+    "commands",
+    "code.execute",
+    "music-search",
+    "music-play",
+    "lyric",
+    "audio-proxy",
+    "rank"
+  ],
+  "hasMcpServers": false,
+  "hasSkills": false,
+  "readme": "# 音乐广场（music-plaza）\n\n基于 [musicdl](https://github.com/CharlesPikachu/musicdl) 的聚合搜索 / 歌单解析 / 在线播放 / 下载插件：一次关键词搜索 57 个音乐与有声平台，拿到可播放直链后由本机服务代理转发，绕开上游防盗链、Referer 校验与跨域限制。\n\n## 功能\n\n- **数十音源**：音源目录在 `sources.json`（唯一真源，Node 与 Python 共读），分「国内音乐 / 海外平台 / 有声读物 / 聚合网关 / 第三方站点」五组，并提供「快速四源」「国内主力」「有声读物」「海外精选」「聚合网关」预设。\n- **聚合搜索**：音源并发池（默认 8 并发，`RUODAO_PLAZA_CONCURRENCY` 可调），每个音源独立超时，先返回的先展示；失败的音源不影响其他结果。\n- **歌单解析**：`/api/playlist` 按链接域名选择对应客户端调用 musicdl 的 `parseplaylist`，整单列出后可播放、入队或批量下载。\n- **有声读物**：喜马拉雅 / 懒人听书 / 荔枝FM / 蜻蜓FM / Apple 播客返回的专辑会展开为「专辑 + 分集」，支持整本播放与按集下载。\n- **下载**：`/api/download/:id` 与播放共用同一代理，改成 `Content-Disposition: attachment` 并保留中文文件名，支持单曲与批量（一次最多 30 首）。\n- **本地音频代理**：`/api/audio/:id` 转发直链并补齐 Referer / UA / Cookie，支持 `Range` 206 分段，浏览器可直接拖动进度条。\n- **封面与歌词**：封面经本地代理加载，歌词抓取 LRC 后解析为逐行时间轴，可点击跳转。\n- **播放器**：底部悬浮播放条、播放队列、循环模式、音量、收藏（播放时重新取流，避免直链过期）、最近搜索与设置。\n- **零外部服务**：插件自带 Python 依赖安装（musicdl），本地服务只监听 `127.0.0.1`。\n- **安装后自动准备环境**：manifest 声明 `requires.runtimes: [\"python\"]` 与 `setup` 命令，桌面端装完插件后自动补齐 Python 并逐个检查 / 安装「Python → 搜索内核 → 本地代理」，每个组件的结果都会回传到安装弹窗和插件市场，环境差异（缺 Python、装不上、端口被占）用户直接可见。\n- **可移植依赖目录**：Windows 随包 Python 是 embeddable 版本（没有 `venv`），此时改用 `pip --target engine/site-packages`，并把目录写进 `python3xx._pth`，运行时由 `PYTHONPATH` 注入，不污染系统 Python。\n\n## 目录\n\n```\nsources.json           音源目录唯一真源（平台 / 分组 / 预设 / className）\nbin/plaza.mjs          命令入口：doctor / setup / engine_* / search / server_*\nbin/plaza-server.mjs   本地 HTTP 服务：搜索流、歌单、下载、音频/封面/歌词代理\nbin/sources.mjs        音源目录读取与解析\nbin/ranks.mjs          酷狗榜单\nbin/shared.mjs         路径、状态文件与进程工具\npython/musicdl_search.py   musicdl 桥接：逐音源 NDJSON 事件、有声专辑展开、歌单解析\nui.json                工作台路由与设置项\nruodao-plugin.json     命令声明（process action）\ntest/                  本地服务测试与 mock 引擎 / 上游\n```\n\n## 数据与运行状态\n\n默认目录 `~/.ruodao/music-plaza`（可用环境变量 `RUODAO_PLAZA_HOME` 覆盖）：\n\n| 文件 | 说明 |\n| --- | --- |\n| `engine/venv` | 插件私有的 Python 虚拟环境（musicdl） |\n| `engine/site-packages` | 无 `venv` 时的可移植依赖目录（embeddable Python） |\n| `engine-state.json` | 引擎就绪状态与版本 |\n| `install-state.json` / `install.log` | 一键安装的进度与日志 |\n| `server.json` / `server.pid` / `server.log` | 本地播放服务状态与日志 |\n\n搜索结果由 musicdl 写入临时目录后立即清理，不会落在插件目录或数据目录里。\n\n## 本地服务接口\n\nBase URL 默认 `http://127.0.0.1:16120`（被占用时自动顺延）。\n\n- `GET /__health`\n- `GET /api/config`：音源目录（平台 / 分组 / 预设 / 上游声明）\n- `GET /api/search/stream?keywords=...&sources=migu,kuwo&limit=8&timeoutSec=60`：NDJSON 渐进结果\n- `GET /api/search?...`：一次性快照\n- `GET /api/playlist?url=...`：歌单 / 专辑解析，返回可播放曲目\n- `GET /api/audio/:id`：音频代理（Range）\n- `GET /api/download/:id`：下载（附件头 + 中文文件名）\n- `GET /api/cover/:id`：封面代理\n- `GET /api/lyric/:id`：歌词 JSON\n- `GET /api/ranks`、`GET /api/rank/kugou/:id`：酷狗榜单\n- `GET /api/resolve?name=&singer=`：按歌名搜索取流（榜单点歌用）\n\n## 开发与验证\n\n```bash\n# 后端单元/集成测试（mock engine + mock 上游，验证渐进搜索、缓存、Range 代理、下载、歌单、有声专辑、封面、歌词）\ncd plugins/music-plaza && node --test test/server.test.mjs\n\n# 桌面端渲染构建 + Electron 端到端验收（隔离 profile、mock 引擎，真实播放 mock WAV）\ncd product/ruodao-desktop && npm run verify:music-plaza\n```\n\n真实引擎安装（首次约 1-3 分钟）：\n\n```bash\ncd plugins/music-plaza\nnode bin/plaza.mjs engine_install\nnode bin/plaza.mjs engine_progress\n```\n\n## 说明\n\n- **数据来源**：所有搜索、歌单解析与取流能力均来自开源项目 [musicdl](https://github.com/CharlesPikachu/musicdl)，本插件只提供界面与本机代理转发，不托管任何音频文件。\n- 插件只做技术演示与个人试听，音频版权归各音乐平台与版权方所有；请支持正版，通过官方渠道获取授权内容，请勿传播或商用。\n- 直链有时效性，收藏与换源都会重新搜索取流；失效时播放器会提示「换源重试」。\n- 网易云、QQ 音乐响应较慢，默认不勾选；必要时在设置里调大超时或并发数。\n- 海外平台（Apple Music / TIDAL / SoundCloud 等）需要 FFmpeg、N_m3u8DL-RE、Bento4 等外部工具，未安装时取流失败属正常现象。\n- 第三方站点（歌曲宝 / 歌曲海等）稳定性与音质参差，仅供备用。"
+}

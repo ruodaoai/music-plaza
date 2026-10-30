@@ -1,0 +1,65 @@
+{
+  "route": "music-plaza",
+  "label": "音乐广场",
+  "description": "基于 musicdl 聚合 57 个音乐/有声平台：聚合搜索、歌单解析、在线播放与下载，音频经本地代理转发。",
+  "icon": "Radio",
+  "version": "1.3.0",
+  "author": "Ruodao",
+  "capabilities": [
+    "commands",
+    "code.execute",
+    "music-search",
+    "music-play",
+    "music-download",
+    "playlist-parse",
+    "audiobook",
+    "lyric",
+    "audio-proxy",
+    "rank"
+  ],
+  "standalone": {
+    "exportable": true,
+    "shell": "generic",
+    "productName": "音乐广场",
+    "executableName": "MusicPlaza",
+    "storageKeys": []
+  },
+  "configFields": [
+    {
+      "key": "RUODAO_PLAZA_SOURCES",
+      "label": "默认搜索音源（逗号分隔，可填 id / 中文名；如 migu,kuwo,ximalaya,spotify）",
+      "placeholder": "migu,kuwo,kugou,qianqian",
+      "secret": false
+    },
+    {
+      "key": "RUODAO_PLAZA_CONCURRENCY",
+      "label": "同时搜索的音源数量（1-24，默认 8；音源选得多时调大更快但更吃网络）",
+      "placeholder": "8",
+      "secret": false
+    },
+    {
+      "key": "RUODAO_PLAZA_LIMIT",
+      "label": "每个音源返回条数（1-20）",
+      "placeholder": "8",
+      "secret": false
+    },
+    {
+      "key": "RUODAO_PLAZA_TIMEOUT",
+      "label": "单次搜索总超时（秒，默认 60）",
+      "placeholder": "60",
+      "secret": false
+    },
+    {
+      "key": "RUODAO_PLAZA_PORT",
+      "label": "本地播放服务端口（默认 16120）",
+      "placeholder": "16120",
+      "secret": false
+    },
+    {
+      "key": "RUODAO_PLAZA_PIP_MIRROR",
+      "label": "musicdl 安装镜像（默认清华 PyPI，留空用官方源）",
+      "placeholder": "https://pypi.tuna.tsinghua.edu.cn/simple",
+      "secret": false
+    }
+  ]
+}

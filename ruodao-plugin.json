@@ -1,0 +1,166 @@
+{
+  "id": "com.ruodao.music-plaza",
+  "name": "音乐广场",
+  "version": "1.3.0",
+  "apiVersion": ">=0.1.0 <0.2.0",
+  "description": "基于 musicdl 聚合 57 个音乐/有声平台：搜索、歌单解析、在线播放与下载，内置酷狗榜单与本地代理转发。",
+  "requires": {
+    "capabilities": {
+      "required": {
+        "commands": "0.1.0",
+        "code.execute": "0.1.0"
+      }
+    },
+    "runtimes": [
+      "python"
+    ]
+  },
+  "setup": {
+    "auto": true,
+    "command": "com.ruodao.music-plaza.setup",
+    "label": "搜索与播放组件"
+  },
+  "permissions": [
+    "network",
+    "process"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "com.ruodao.music-plaza.doctor",
+        "title": "环境自检（引擎 / 本地服务）",
+        "description": "检查 Python、musicdl 引擎、本地播放服务的状态，不产生费用。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "doctor"
+          ],
+          "cwd": ".",
+          "timeoutMs": 60000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.engine-status",
+        "title": "搜索引擎状态",
+        "description": "检测 musicdl Python 引擎是否已安装、版本与安装进度。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "engine_status"
+          ],
+          "cwd": ".",
+          "timeoutMs": 30000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.setup",
+        "title": "首次使用自检（Python / musicdl / 本地代理）",
+        "description": "安装后自动执行：检查并补齐 Python 与 musicdl 搜索内核，启动本地代理，逐项输出结果供界面展示。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "setup"
+          ],
+          "cwd": ".",
+          "timeoutMs": 2100000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.engine-install",
+        "title": "一键安装搜索引擎（musicdl）",
+        "description": "创建独立 Python 运行环境（无 venv 时改用私有依赖目录）并安装 musicdl（首次约 100-200MB），后台执行、可查询进度。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "engine_install"
+          ],
+          "cwd": ".",
+          "timeoutMs": 30000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.engine-progress",
+        "title": "搜索引擎安装进度",
+        "description": "查询后台 musicdl 安装的实时进度、日志摘要与错误信息。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "engine_progress"
+          ],
+          "cwd": ".",
+          "timeoutMs": 30000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.engine-reset",
+        "title": "重置搜索引擎",
+        "description": "删除插件私有 Python 运行环境（虚拟环境或依赖目录）与安装状态，用于修复安装损坏；不影响插件本身。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "engine_reset"
+          ],
+          "cwd": ".",
+          "timeoutMs": 30000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.search",
+        "title": "聚合搜索（musicdl）",
+        "description": "按关键词聚合搜索多个音乐平台，返回可播放直链与来源信息。stdin 传 { keywords, sources?, limit?, timeoutSec? }。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "search"
+          ],
+          "cwd": ".",
+          "timeoutMs": 240000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.server-ensure",
+        "title": "启动本地播放服务（16120）",
+        "description": "启动内置的本地服务：渐进搜索、音频代理转发、封面/歌词代理。界面自动调用。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "server_ensure"
+          ],
+          "cwd": ".",
+          "timeoutMs": 60000
+        }
+      },
+      {
+        "id": "com.ruodao.music-plaza.server-stop",
+        "title": "停止本地播放服务",
+        "description": "停止插件启动的本地服务进程，释放 16120 端口。",
+        "action": {
+          "type": "process",
+          "command": "node",
+          "args": [
+            "bin/plaza.mjs",
+            "server_stop"
+          ],
+          "cwd": ".",
+          "timeoutMs": 30000
+        }
+      }
+    ]
+  }
+}
